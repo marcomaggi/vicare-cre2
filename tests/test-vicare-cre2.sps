@@ -1,14 +1,14 @@
 ;;; -*- coding: utf-8-unix -*-
 ;;;
-;;;Part of: Vicare/Template
-;;;Contents: tests for Template bindings
-;;;Date: Tue Jan 24, 2012
+;;;Part of: Vicare/CRE2
+;;;Contents: tests for CRE2 binding
+;;;Date: Fri Jan  6, 2012
 ;;;
 ;;;Abstract
 ;;;
 ;;;
 ;;;
-;;;Copyright (C) 2013 Marco Maggi <marco.maggi-ipsu@poste.it>
+;;;Copyright (C) 2012, 2015 Marco Maggi <marco.maggi-ipsu@poste.it>
 ;;;
 ;;;This program is free software:  you can redistribute it and/or modify
 ;;;it under the terms of the  GNU General Public License as published by
@@ -27,182 +27,259 @@
 
 #!r6rs
 (import (vicare)
-  (vicare category template)
-  (vicare category template constants)
-;;;  (prefix (vicare ffi) ffi.)
-  (vicare arguments validation)
+  (prefix (vicare regexps cre2 (0 4)) cre2.)
   (vicare checks))
 
 (check-set-mode! 'report-failed)
-(check-display "*** testing Vicare Template bindings\n")
-
-
-;;;; helpers
-
+(check-display "*** testing Vicare CRE2 binding\n")
 
 
 (parametrise ((check-test-name	'version))
 
   (check
-      (fixnum? (vicare-template-version-interface-current))
+      (fixnum? (cre2.cre2-version-interface-current))
     => #t)
 
   (check
-      (fixnum? (vicare-template-version-interface-revision))
+      (fixnum? (cre2.cre2-version-interface-revision))
     => #t)
 
   (check
-      (fixnum? (vicare-template-version-interface-age))
+      (fixnum? (cre2.cre2-version-interface-age))
+    => #t)
+
+;;; --------------------------------------------------------------------
+
+  (check
+      (fixnum? (cre2.vicare-cre2-version-interface-current))
     => #t)
 
   (check
-      (string? (vicare-template-version))
+      (fixnum? (cre2.vicare-cre2-version-interface-revision))
+    => #t)
+
+  (check
+      (fixnum? (cre2.vicare-cre2-version-interface-age))
     => #t)
 
   #t)
 
 
-(parametrise ((check-test-name		'struct-alpha)
-	      (struct-guardian-logger	#t))
+(parametrise ((check-test-name	'options))
 
-  (define who 'test)
-
-  (check	;this will be garbage collected
-      (let ((voice (template-alpha-initialise)))
-;;;(debug-print voice)
-	(template-alpha? voice))
+  (check
+      (let ((opts (cre2.make-options)))
+	(cre2.options? opts))
     => #t)
 
   (check
-      (template-alpha?/alive (template-alpha-initialise))
+      (let ((opts (cre2.make-options)))
+	(cre2.delete-options opts)
+	(cre2.delete-options opts)
+	(cre2.delete-options opts)
+	(cre2.options? opts))
     => #t)
 
-  (check	;single finalisation
-      (let ((voice (template-alpha-initialise)))
-  	(template-alpha-finalise voice))
-    => #f)
+  (when #f
+    (check-display (cre2.make-options))
+    (check-newline))
 
-  (check	;double finalisation
-      (let ((voice (template-alpha-initialise)))
-  	(template-alpha-finalise voice)
-  	(template-alpha-finalise voice))
-    => #f)
+;;; --------------------------------------------------------------------
 
-  (check	;alive predicate after finalisation
-      (let ((voice (template-alpha-initialise)))
-  	(template-alpha-finalise voice)
-  	(template-alpha?/alive voice))
+  (check
+      (let ((opts (cre2.make-options)))
+	(cre2.set-posix-syntax! opts #t)
+	(cre2.posix-syntax? opts))
+    => #t)
+
+  (check
+      (let ((opts (cre2.make-options)))
+	(cre2.set-posix-syntax! opts #f)
+	(cre2.posix-syntax? opts))
     => #f)
 
 ;;; --------------------------------------------------------------------
-;;; destructor
 
   (check
-      (with-result
-       (let ((voice (template-alpha-initialise)))
-	 (set-template-alpha-custom-destructor! voice (lambda (voice)
-							(add-result 123)))
-	 (template-alpha-finalise voice)))
-    => '(#f (123)))
+      (let ((opts (cre2.make-options)))
+	(cre2.set-longest-match! opts #t)
+	(cre2.longest-match? opts))
+    => #t)
+
+  (check
+      (let ((opts (cre2.make-options)))
+	(cre2.set-longest-match! opts #f)
+	(cre2.longest-match? opts))
+    => #f)
 
 ;;; --------------------------------------------------------------------
-;;; hash
-
-  (check-for-true
-   (integer? (template-alpha-hash (template-alpha-initialise))))
 
   (check
-      (let ((A (template-alpha-initialise))
-	    (B (template-alpha-initialise))
-	    (T (make-hashtable template-alpha-hash eq?)))
-	(hashtable-set! T A 1)
-	(hashtable-set! T B 2)
-	(list (hashtable-ref T A #f)
-	      (hashtable-ref T B #f)))
-    => '(1 2))
+      (let ((opts (cre2.make-options)))
+	(cre2.set-log-errors! opts #t)
+	(cre2.log-errors? opts))
+    => #t)
+
+  (check
+      (let ((opts (cre2.make-options)))
+	(cre2.set-log-errors! opts #f)
+	(cre2.log-errors? opts))
+    => #f)
 
 ;;; --------------------------------------------------------------------
-;;; properties
 
   (check
-      (let ((S (template-alpha-initialise)))
-	(template-alpha-property-list S))
-    => '())
+      (let ((opts (cre2.make-options)))
+	(cre2.set-literal! opts #t)
+	(cre2.literal? opts))
+    => #t)
 
   (check
-      (let ((S (template-alpha-initialise)))
-	(template-alpha-putprop S 'ciao 'salut)
-	(template-alpha-getprop S 'ciao))
-    => 'salut)
+      (let ((opts (cre2.make-options)))
+	(cre2.set-literal! opts #f)
+	(cre2.literal? opts))
+    => #f)
+
+;;; --------------------------------------------------------------------
 
   (check
-      (let ((S (template-alpha-initialise)))
-	(template-alpha-getprop S 'ciao))
+      (let ((opts (cre2.make-options)))
+	(cre2.set-never-nl! opts #t)
+	(cre2.never-nl? opts))
+    => #t)
+
+  (check
+      (let ((opts (cre2.make-options)))
+	(cre2.set-never-nl! opts #f)
+	(cre2.never-nl? opts))
+    => #f)
+
+;;; --------------------------------------------------------------------
+
+  (check
+      (let ((opts (cre2.make-options)))
+	(cre2.set-case-sensitive! opts #t)
+	(cre2.case-sensitive? opts))
+    => #t)
+
+  (check
+      (let ((opts (cre2.make-options)))
+	(cre2.set-case-sensitive! opts #f)
+	(cre2.case-sensitive? opts))
+    => #f)
+
+;;; --------------------------------------------------------------------
+
+  (check
+      (let ((opts (cre2.make-options)))
+	(cre2.set-perl-classes! opts #t)
+	(cre2.perl-classes? opts))
+    => #t)
+
+  (check
+      (let ((opts (cre2.make-options)))
+	(cre2.set-perl-classes! opts #f)
+	(cre2.perl-classes? opts))
+    => #f)
+
+;;; --------------------------------------------------------------------
+
+  (check
+      (let ((opts (cre2.make-options)))
+	(cre2.set-word-boundary! opts #t)
+	(cre2.word-boundary? opts))
+    => #t)
+
+  (check
+      (let ((opts (cre2.make-options)))
+	(cre2.set-word-boundary! opts #f)
+	(cre2.word-boundary? opts))
+    => #f)
+
+;;; --------------------------------------------------------------------
+
+  (check
+      (let ((opts (cre2.make-options)))
+	(cre2.set-one-line! opts #t)
+	(cre2.one-line? opts))
+    => #t)
+
+  (check
+      (let ((opts (cre2.make-options)))
+	(cre2.set-one-line! opts #f)
+	(cre2.one-line? opts))
+    => #f)
+
+;;; --------------------------------------------------------------------
+
+  (check
+      (let ((opts (cre2.make-options)))
+	(cre2.set-max-mem! opts 1024)
+	(cre2.max-mem opts))
+    => 1024)
+
+  #t)
+
+
+(parametrise ((check-test-name	'regexps))
+
+  (check
+      (let ((rex (cre2.make-regexp "ciao|hello" (cre2.make-options))))
+	(cre2.regexp? rex))
+    => #t)
+
+  (check
+      (let ((rex (cre2.make-regexp "ciao|hello")))
+	(cre2.regexp? rex))
+    => #t)
+
+  (check
+      (let ((rex (cre2.make-regexp (string->utf8 "ciao|hello"))))
+	(cre2.regexp? rex))
+    => #t)
+
+  (check
+      (let ((rex (cre2.make-regexp "ciao|hello")))
+	(cre2.delete-regexp rex)
+	(cre2.delete-regexp rex)
+	(cre2.delete-regexp rex)
+	(cre2.regexp? rex))
+    => #t)
+
+  #t)
+
+
+(parametrise ((check-test-name	'match))
+
+  (check
+      (let ((rex (cre2.make-regexp "ciao|hello")))
+  	(cre2.match rex "ciao" #f #f 'unanchored))
+    => '#((0 . 4)))
+
+  (check
+      (let ((rex (cre2.make-regexp "ciao|hello")))
+  	(cre2.match rex "ohayo" #f #f 'unanchored))
     => #f)
 
   (check
-      (let ((S (template-alpha-initialise)))
-	(template-alpha-putprop S 'ciao 'salut)
-	(template-alpha-remprop S 'ciao)
-	(template-alpha-getprop S 'ciao))
-    => #f)
+      (let ((rex (cre2.make-regexp "ciao|hello")))
+	(cre2.match rex "hello" #f #f 'unanchored))
+    => '#((0 . 5)))
 
   (check
-      (let ((S (template-alpha-initialise)))
-	(template-alpha-putprop S 'ciao 'salut)
-	(template-alpha-putprop S 'hello 'ohayo)
-	(list (template-alpha-getprop S 'ciao)
-	      (template-alpha-getprop S 'hello)))
-    => '(salut ohayo))
+      (let ((rex (cre2.make-regexp "ci(ao)|hello")))
+	(cre2.match rex "ciao" #f #f 'unanchored))
+    => '#((0 . 4)
+	  (2 . 4)))
 
-;;; --------------------------------------------------------------------
-;;; arguments validation
+  (check
+      (let ((rex (cre2.make-regexp "c(i(ao))|hello")))
+	(cre2.match rex "ciao" #f #f 'unanchored))
+    => '#((0 . 4)
+	  (1 . 4)
+	  (2 . 4)))
 
-  (check-for-true
-   (let ((S (template-alpha-initialise)))
-     (with-arguments-validation (who)
-	 ((template-alpha	S))
-       #t)))
-
-  (check-for-true
-   (let ((S (template-alpha-initialise)))
-     (template-alpha-finalise S)
-     (with-arguments-validation (who)
-	 ((template-alpha	S))
-       #t)))
-
-  (check-for-true
-   (let ((S (template-alpha-initialise)))
-     (with-arguments-validation (who)
-	 ((template-alpha/alive	S))
-       #t)))
-
-;;;
-
-  (check-for-procedure-argument-violation
-      (let ((S 123))
-	(with-arguments-validation (who)
-	    ((template-alpha	S))
-	  #t))
-    => (list who '(123)))
-
-  (check-for-procedure-argument-violation
-      (let ((S 123))
-	(with-arguments-validation (who)
-	    ((template-alpha/alive	S))
-	  #t))
-    => (list who '(123)))
-
-  (let ((S (template-alpha-initialise)))
-    (check-for-procedure-argument-violation
-	(begin
-	  (template-alpha-finalise S)
-	  (with-arguments-validation (who)
-	      ((template-alpha/alive	S))
-	    #t))
-      => (list who (list S))))
-
-  (collect))
+  #t)
 
 
 ;;;; done

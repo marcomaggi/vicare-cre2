@@ -34,19 +34,8 @@
 #ifdef HAVE_CONFIG_H
 #  include <config.h>
 #endif
-#include <vicare.h>
+#include "vicare.h"
 #include <cre2.h>
-
-
-/** --------------------------------------------------------------------
- ** Handling of Scheme objects.
- ** ----------------------------------------------------------------- */
-
-/* Accessors for the fields of the Scheme structure "cre2_alpha". */
-#define IK_CRE2_ALPHA_POINTER(ALPHA)	IK_FIELD((ALPHA),0)
-#define IK_CRE2_ALPHA_OWNER(ALPHA)		IK_FIELD((ALPHA),1)
-#define IK_CRE2_ALPHA(ALPHA)	\
-  IK_POINTER_DATA_VOIDP(IK_CRE2_ALPHA_POINTER(ALPHA))
 
 
 /** --------------------------------------------------------------------

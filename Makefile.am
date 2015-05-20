@@ -38,6 +38,10 @@ libvicare_cre2_la_SOURCES	= \
 	src/vicare-cre2-version.c	\
 	src/vicare-cre2-internals.h
 
+.PHONY: vicare-c-library
+
+vicare-c-library: $(lib_LTLIBRARIES)
+
 #page
 #### libraries
 
@@ -59,16 +63,6 @@ FASL_PREREQUISTES	= $(lib_LTLIBRARIES)
 
 ## --------------------------------------------------------------------
 
-BUILT_SOURCES		+= lib/vicare/regexps/cre2/features.vicare.sls
-CLEANFILES		+= lib/vicare/regexps/cre2/features.vicare.sls
-noinst_PROGRAMS		= features
-features_SOURCES	= lib/features.c
-
-lib/vicare/regexps/cre2/features.vicare.sls : features
-	$(MKDIR_P) lib/vicare/regexps && ./features >$@
-
-## --------------------------------------------------------------------
-
 EXTRA_DIST += \
 	lib/libraries.scm			\
 	scripts/build-makefile-rules.sps
@@ -80,7 +74,7 @@ VICARE_BUILD_DEPS	= \
 
 .PHONY: dependencies
 
-dependencies: lib/vicare/regexps/cre2/features.vicare.sls
+dependencies:
 	$(VICARE_BUILD_DEPS) $(slsdir)/libraries.scm >$(slsdir)/dependencies.make
 
 # NOTE This  INCLUDE directive is  processed by Automake.   To specify

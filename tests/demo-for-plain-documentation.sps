@@ -1,14 +1,14 @@
 ;;; -*- coding: utf-8-unix -*-
 ;;;
-;;;Part of: Vicare/Template
+;;;Part of: Vicare/CRE2
 ;;;Contents: demo for documentation
-;;;Date: Tue Jan 24, 2012
+;;;Date: Wed May 20, 2015
 ;;;
 ;;;Abstract
 ;;;
 ;;;
 ;;;
-;;;Copyright (C) 2013 Marco Maggi <marco.maggi-ipsu@poste.it>
+;;;Copyright (C) 2015 Marco Maggi <marco.maggi-ipsu@poste.it>
 ;;;
 ;;;This program is free software:  you can redistribute it and/or modify
 ;;;it under the terms of the  GNU General Public License as published by
@@ -27,10 +27,7 @@
 
 #!r6rs
 (import (vicare)
-  (vicare category template)
-  (vicare category template constants)
-  #;(prefix (vicare ffi) ffi.)
-  #;(vicare language-extensions syntaxes))
+  (vicare regexps cre2))
 
 
 ;;;; helpers
@@ -43,10 +40,10 @@
 
 (let ()
 
-  (%pretty-print (list (vicare-template-version-interface-current)
-		       (vicare-template-version-interface-revision)
-		       (vicare-template-version-interface-age)
-		       (vicare-template-version)))
+  (%pretty-print (list (vicare-cre2-version-interface-current)
+		       (vicare-cre2-version-interface-revision)
+		       (vicare-cre2-version-interface-age)
+		       (vicare-cre2-version)))
 
   #t)
 

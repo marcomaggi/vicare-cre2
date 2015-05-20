@@ -86,21 +86,23 @@ AC_INCLUDES_DEFAULT
 #endif
 ])
 
-dnl Stuff
-dnl VICARE_CONSTANT_TESTS([XML_TRUE XML_FALSE])
-
 #page
 #### C language functions from the header file "cre2.h"
 
-dnl AC_CHECK_FUNCS([cre2_version])
+AC_CHECK_FUNCS([cre2_version_interface_current cre2_version_interface_revision cre2_version_interface_age])
+AC_CHECK_FUNCS([cre2_new cre2_delete])
+AC_CHECK_FUNCS([cre2_opt_new cre2_opt_delete cre2_opt_set_encoding cre2_opt_set_max_mem cre2_opt_max_mem])
+AC_CHECK_FUNCS([cre2_opt_set_posix_syntax cre2_opt_set_longest_match cre2_opt_set_log_errors cre2_opt_set_literal cre2_opt_set_never_nl cre2_opt_set_case_sensitive cre2_opt_set_perl_classes cre2_opt_set_word_boundary cre2_opt_set_one_line])
+AC_CHECK_FUNCS([cre2_opt_posix_syntax cre2_opt_longest_match cre2_opt_log_errors cre2_opt_literal cre2_opt_never_nl cre2_opt_case_sensitive cre2_opt_perl_classes cre2_opt_word_boundary cre2_opt_one_line])
+AC_CHECK_FUNCS([cre2_num_capturing_groups cre2_match cre2_strings_to_ranges])
+AC_CHECK_FUNCS([cre2_error_code])
 
 #page
 #### finish
 
 VICARE_OUTPUT
 AC_CONFIG_HEADERS([config.h])
-AC_CONFIG_FILES([Makefile]
-   [lib/vicare/regexps/cre2/constants.vicare.sls])
+AC_CONFIG_FILES([Makefile])
 AC_OUTPUT
 
 ### end of file

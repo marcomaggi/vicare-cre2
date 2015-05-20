@@ -32,28 +32,61 @@
 
 
 /** --------------------------------------------------------------------
- ** Version functions.
+ ** Version functions for Vicare/CRE2.
  ** ----------------------------------------------------------------- */
 
 ikptr
-ikrt_cre2_version_interface_current (void)
+ikrt_vicare_vicare_cre2_version_interface_current (void)
 {
   return IK_FIX(vicare_cre2_VERSION_INTERFACE_CURRENT);
 }
 ikptr
-ikrt_cre2_version_interface_revision (void)
+ikrt_vicare_vicare_cre2_version_interface_revision (void)
 {
   return IK_FIX(vicare_cre2_VERSION_INTERFACE_REVISION);
 }
 ikptr
-ikrt_cre2_version_interface_age (void)
+ikrt_vicare_vicare_cre2_version_interface_age (void)
 {
   return IK_FIX(vicare_cre2_VERSION_INTERFACE_AGE);
 }
 ikptr
-ikrt_cre2_version (ikpcb * pcb)
+ikrt_vicare_vicare_cre2_version (ikpcb * pcb)
 {
   return ika_bytevector_from_cstring(pcb, vicare_cre2_VERSION_INTERFACE_STRING);
+}
+
+
+/** --------------------------------------------------------------------
+ ** Version functions for CRE2.
+ ** ----------------------------------------------------------------- */
+
+ikptr
+ikrt_vicare_cre2_version_interface_current (void)
+{
+#ifdef HAVE_CRE2_VERSION_INTERFACE_CURRENT
+  return IK_FIX(cre2_version_interface_current());
+#else
+  feature_failure(__func__);
+#endif
+}
+ikptr
+ikrt_vicare_cre2_version_interface_revision (void)
+{
+#ifdef HAVE_CRE2_VERSION_INTERFACE_REVISION
+  return IK_FIX(cre2_version_interface_revision());
+#else
+  feature_failure(__func__);
+#endif
+}
+ikptr
+ikrt_vicare_cre2_version_interface_age (void)
+{
+#ifdef HAVE_CRE2_VERSION_INTERFACE_AGE
+  return IK_FIX(cre2_version_interface_age());
+#else
+  feature_failure(__func__);
+#endif
 }
 
 /* end of file */

@@ -43,7 +43,7 @@
 @set FOREIGN_SCHEME_LIB         @library{vicare regexps cre2}
 @set NAUSICAA_SCHEME_LIB        @library{nausicaa regexps cre2}
 @set GITHUB_URL                 @url{http://github.com/marcomaggi/vicare-cre2}
-@set BITBUCKET_URL              @url{https://bitbucket.org/marcomaggi/vicare-cre2/}
+@set BITBUCKET_URL              @url{https://bitbucket.org/marcomaggi/vicare-cre2}
 @set DOWNLOAD_URL               @url{https://bitbucket.org/marcomaggi/vicare-cre2/downloads}
 @set DOCUMENTATION_URL          @url{http://marcomaggi.github.io/docs/vicare-cre2.html}
 @set VICARE_HOMEPAGE_URL        @url{http://marcomaggi.github.io/vicare.html}
@@ -54,6 +54,10 @@
 
 @macro cretwo{}
 @acronym{CRE2}
+@end macro
+
+@macro retwo{}
+@acronym{RE2}
 @end macro
 
 @c page
@@ -169,6 +173,11 @@ supporting @gnu{}+Linux systems.  @value{PACKAGE} is a distribution of C
 language and Scheme language libraries for Vicare Scheme; it provides
 bindings for the @value{FOREIGN_PACKAGE} C language library.
 
+@cretwo{} is a C language wrapper for the @retwo{} library, which is
+implemented in C++.  @retwo{} is a fast, safe, thread--friendly
+alternative to backtracking regular expression engines like those used
+in PCRE, Perl, and Python.
+
 The last time the author bothered to update this paragraph, he had
 tested @value{FOREIGN_PACKAGE} version @value{FOREIGN_VERSION}; the
 @value{FOREIGN_PACKAGE} library is available at:
@@ -177,10 +186,8 @@ tested @value{FOREIGN_PACKAGE} version @value{FOREIGN_VERSION}; the
 
 The package installs a C language library implementing wrapper C
 functions for the C language @value{FOREIGN_PACKAGE} library; on top of
-this, the Scheme library @library{vicare regexps cre2} exports one
-binding for each @value{FOREIGN_PACKAGE} public function; additionally
-the library @library{vicare regexps cre2 constants} exports one binding
-for each constant value defined in the C language header @file{cre2.h}.
+this, the Scheme library @library{vicare regexps cre2} exports syntactic
+bindings adapting @value{FOREIGN_PACKAGE}'s public @api{} to Scheme.
 
 The following Scheme libraries are installed:
 
@@ -188,35 +195,18 @@ The following Scheme libraries are installed:
 @item @library{vicare regexps cre2}
 @cindex Library @library{vicare regexps cre2}
 @cindex @library{vicare regexps cre2}, library
-It exports one binding for each @value{FOREIGN_PACKAGE} public function.
-All the Scheme function names are directly derived from the C function
-names by replacing underscore characters @samp{_} with dash characters
-@samp{-}; so @cfunc{cre2_match} becomes @func{cre2-match}.
+It exports variable syntactic bindings adapting
+@value{FOREIGN_PACKAGE}'s public functions to a Scheme @api{}.
 
 @item @library{vicare regexps cre2 unsafe-capi}
 @cindex Library @library{vicare regexps cre2 unsafe-capi}
 @cindex @library{vicare regexps cre2 unsafe-capi}, library
-It exports one syntax binding for each @value{FOREIGN_PACKAGE} public
-function.  All the Scheme syntax names are directly derived from the C
-function names by replacing underscore characters @samp{_} with dash
-characters @samp{-}; so @cfunc{cre2_match} becomes @func{cre2-match}.
+It exports keyword syntactic bindings adapting @value{FOREIGN_PACKAGE}'s
+public functions to a Scheme @api{}.
 
 These syntaxes expand to a direct call to the C language wrapper
 functions in the @value{PACKAGE} library; they are not meant to be
 called in normal usage of the package.
-
-@item @library{vicare regexps cre2 constants}
-@cindex Library @library{vicare regexps cre2 constants}
-@cindex @library{vicare regexps cre2 constants}, library
-It exports one binding for each constant value defined in the C language
-header @file{cre2.h}.
-
-@item @library{vicare regexps cre2 features}
-@cindex Library @library{vicare regexps cre2 features}
-@cindex @library{vicare regexps cre2 features}, library
-It exports one identifier syntax binding for each @code{HAVE_} constant
-defined by the @command{configure} script, expanding to @true{} or
-@false{}.
 @end table
 
 Scheme libraries are installed under the directory:
@@ -236,12 +226,23 @@ to the @value{FOREIGN_PACKAGE}'s documentation for details.
 
 
 The library @value{FOREIGN_SCHEME_LIB} implements the high level @api{}
-for @value{FOREIGN_PACKAGE}.
+for @value{FOREIGN_PACKAGE}.  To avoid syntactic binding names
+collisions: it is suggested to import it by prefixing with @samp{cre2.},
+as in:
+
+@lisp
+(import (prefix (vicare regexp cre2) cre2.))
+@end lisp
+
+@noindent
+the bindings do @strong{not} have the @code{cre2} prefix.
 
 @menu
 * plain version::               @value{PACKAGE} version informations.
-* plain alpha::                 Alpha objects.
-* plain misc::                  Miscellaneous operations.
+* plain regexps::               Precompiled regular expressions
+                                construction.
+* plain options::               Matching configuration.
+* plain match::                 Matching regular expressions.
 @end menu
 
 @c page
@@ -261,192 +262,200 @@ The following bindings are exported by the library
 @defun vicare-cre2-version-interface-current
 @defunx vicare-cre2-version-interface-revision
 @defunx vicare-cre2-version-interface-age
-Return a fixnum representing a version number.
+Return a fixnum representing a version number of @value{PACKAGE}.
 @end defun
 
 
 @defun vicare-cre2-version
-Return a Scheme string representing the version number.
+Return a Scheme string representing the version number of
+@value{PACKAGE}.
+@end defun
+
+
+@defun cre2-version-interface-current
+@defunx cre2-version-interface-revision
+@defunx cre2-version-interface-age
+Return a fixnum representing a version number of @cretwo{}.
 @end defun
 
 @c page
-@node plain alpha
-@section Alpha objects
-
-
-@menu
-* plain alpha struct::          Alpha data structure.
-* plain alpha ops::             Operating on alpha objects.
-@end menu
-
-@c page
-@node plain alpha struct
-@subsection Alpha data structure
+@node plain regexps
+@section Precompiled regular expressions construction
 
 
 The following bindings are exported by the library
 @value{FOREIGN_SCHEME_LIB}.
 
 
-@deftp {Struct Type} cre2-alpha
-@cindex Argument @var{alpha}
-@cindex @var{alpha} argument
-Opaque structure type referencing an instance of the C language type
-@code{cre2_alpha}.  When instances of this type are used as
-arguments to functions: this documentation identifies them as
-@var{alpha}.
+@defun make-regexp @var{pattern}
+@defunx make-regexp @var{pattern} @var{opt}
+Build and return a precompiled regular expression object.  The returned
+object must be finalised with @func{delete-regexp}; this operation is
+automatically performed when the object is garbage collected.
 
-Instances of this type must be finalised with
-@func{cre2-alpha-finalise}; whenever an instance of this type is
-garbage collected: @func{cre2-alpha-finalise} is automatically
-applied to it and any error ignored.
-
-In certain contexts, instances of this type own the referenced
-@code{cre2_alpha} value, in other contexts they do not:
-
-@itemize
-@item
-Finalising a @objtype{cre2-alpha} instance owning the
-@code{cre2_alpha} value, causes finalisation of the
-@code{cre2_alpha} value too.
-
-@item
-Finalising a @objtype{cre2-alpha} instance @strong{not} owning the
-@code{cre2_alpha} value, leaves the @code{cre2_alpha} untouched.
-@end itemize
-
-@noindent
-this should happen transparently.
-@end deftp
-
-
-@defun cre2-alpha? @var{obj}
-Return @true{} if @var{obj} is an instance of @objtype{cre2-alpha};
-otherwise return @false{}.
+@var{pattern} must be a string or @utf{}-8 bytevector holding the
+regular expression pattern.  When used, @var{opt} must be a
+configuration options object returned by @func{make-options}.
 @end defun
 
 
-@defun cre2-alpha?/alive @var{obj}
-Return @true{} if @var{obj} is an instance of @objtype{cre2-alpha} and it
-has not been finalised; return @false{} otherwise.
-@end defun
-
-@c ------------------------------------------------------------
-
-@subsubheading Object properties
-
-
-@defun cre2-alpha-putprop @var{alpha} @var{key} @var{value}
-Add a new property @var{key} to the property list of @var{alpha};
-@var{key} must be a symbol.  If @var{key} is already set: the old entry
-is mutated to reference the new @var{value}.
+@defun delete-regexp @var{rex}
+Finalise a precompiled regular expression object releasing all the
+associated resources.  This function can be safely applied multiple
+times to the same @var{rex} object: the first time the object is
+finalised, the subsequent times nothing happens.
 @end defun
 
 
-@defun cre2-alpha-getprop @var{alpha} @var{key}
-Return the value of the property @var{key} in the property list of
-@var{alpha}; if @var{key} is not set: return @false{}.  @var{key} must
-be a symbol.
+@defun regexp? @var{obj}
+Return @true{} if @var{obj} is a precompiled regular expression object,
+return @false{} otherwise.
+@end defun
+
+@c page
+@node plain options
+@section Matching configuration
+
+
+The following bindings are exported by the library
+@value{FOREIGN_SCHEME_LIB}.
+
+
+@defun make-options
+Build and return a configuration option object initialised with default
+values.  The returned object must be finalised with
+@func{delete-options}; this operation is automatically performed when
+the object is garbage collected.
 @end defun
 
 
-@defun cre2-alpha-remprop @var{alpha} @var{key}
-Remove the property @var{key} from the property list of @var{alpha}; if
-@var{key} is not set: nothing happens.  @var{key} must be a symbol.
+@defun delete-options @var{opt}
+Finalise a configuration option object releasing all the associated
+resources.  This function can be safely applied multiple times to the
+same @var{opt} object: the first time the object is finalised, the
+subsequent times nothing happens.
 @end defun
 
 
-@defun cre2-alpha-property-list @var{alpha}
-Return a new association list representing the property list of
-@var{alpha}.  The order of the entries is the same as the property
-creation order.
+@defun options? @var{obj}
+Return @true{} if @var{obj} is a configuration options object, return
+@false{} otherwise.
 @end defun
 
-@c ------------------------------------------------------------
 
-@subsubheading Custom destructor
+All the following functions are setters and getters for matching
+options; see the original documentation for details.
 
 
-@defun alpha-custom-destructor @var{alpha}
-@defunx set-alpha-custom-destructor! @var{alpha} @var{func}
-Retrieve or set a destructor function associated to @var{alpha}.
-
-Whenever @var{alpha} is finalised, either explicitly with
-@func{cre2-alpha-finalise} or implicitly by the garbage collector,
-@var{func} is applied to @var{alpha} before the internal state of
-@var{alpha} is destroyed.
+@defun set-posix-syntax! @var{opt} @var{bool}
+@defunx set-longest-match! @var{opt} @var{bool}
+@defunx set-log-errors! @var{opt} @var{bool}
+@defunx set-literal! @var{opt} @var{bool}
+@defunx set-never-nl! @var{opt} @var{bool}
+@defunx set-case-sensitive! @var{opt} @var{bool}
+@defunx set-perl-classes! @var{opt} @var{bool}
+@defunx set-word-boundary! @var{opt} @var{bool}
+@defunx set-one-line! @var{opt} @var{bool}
+Configuration option setters.  @var{opt} must a be configuration options
+object.  @var{bool} must be true or false.
 @end defun
 
-@c ------------------------------------------------------------
 
-@subsubheading Other operations
+@defun posix-syntax @var{opt}
+@defunx longest-match @var{opt}
+@defunx log-errors @var{opt}
+@defunx literal @var{opt}
+@defunx never-nl @var{opt}
+@defunx case-sensitive @var{opt}
+@defunx perl-classes @var{opt}
+@defunx word-boundary @var{opt}
+@defunx one-line @var{opt}
+Configuration option getters; return @true{} if the option is set,
+@false{} otherwise.  @var{opt} must be a configuration options object.
+@end defun
 
 
-@defun cre2-alpha-hash @var{alpha}
-Return an exact integer to be used as hashtable key for @var{alpha}.
-Hashtables having a @objtype{cre2-alpha} as key can be instantiated
-as follows:
+@defun set-max-mem! @var{opt} @var{dimension}
+@defunx max-mem @var{opt}
+Setter and getter for the maximum memory configuration option.
+@var{opt} must be a configuration options object.  @var{dimension} must
+be a positive exact integer fitting in a platform's @code{int} C
+language data type.
+@end defun
+
+@c page
+@node plain match
+@section Matching regular expressions
+
+
+Basic regular expressions matching goes as follows:
 
 @example
-(make-hashtable cre2-alpha-hash eq?)
+#!r6rs
+(import (vicare)
+  (prefix (vicare regexps cre2) cre2.))
+
+(let ((rex (cre2.make-regexp "ciao|hello")))
+  (cre2.match rex "ciao" #f #f 'unanchored))
+@result{} #((0 . 4))
+
+(let ((rex (cre2.make-regexp "ciao|hello")))
+  (cre2.match rex "hello" #f #f 'unanchored))
+@result{} #((0 . 5))
+
+(let ((rex (cre2.make-regexp "ci(ao)|hello")))
+  (cre2.match rex "ciao" #f #f 'unanchored))
+@result{} #((0 . 4)
+     (2 . 4))
+
+(let ((rex (cre2.make-regexp "c(i(ao))|hello")))
+  (cre2.match rex "ciao" #f #f 'unanchored))
+@result{} #((0 . 4)
+     (1 . 4)
+     (2 . 4))
 @end example
+
+The following bindings are exported by the @library{vicare cre2}
+library.
+
+
+@defun match @var{rex} @var{text} @var{start} @var{end} @var{anchor}
+Match a substring of @var{text} against the regular expression object
+@var{rex}.  Return false if there is no match, else return a vector
+representing the matching portions.
+
+@var{text} must be a @utf{}-8 bytevector or a Scheme string which is
+internally transformed to a @utf{}-8 bytevector.  All the indices in
+@var{text} used by this function are relative to the
+@strong{bytevector}, not the Scheme string.  Only when the string
+contains only characters in the @ascii{} range the indices for the
+@utf{}-8 bytevector equal the indices for the string.
+
+The zero--based indices @var{start} (inclusive) and @var{end}
+(exclusive) select the range of @var{text} to be examined.  As special
+case: if @var{start} is @false{}, the start index is set to zero; if
+@var{end} is @false{}, the end index is set to the length of the
+bytevector.
+
+@var{anchor} selects the anchor point for the matching operation, it
+must be one of the symbols: @code{unanchored}, @code{start},
+@code{both}.
+
+Data about the matching groups is returned in a vector of pairs, which
+will have a number of slots equal to the number of parenthetical
+subexpressions in @var{rex} plus one.  Each pair selects a range of
+bytes in @var{text}: the car is a non--negative fixnum representing the
+inclusive start index, the cdr is a non--negative fixnum representing
+the exclusive end index.
+
+The first element of the match vector (index @math{0}) references the
+full portion of the substring of @var{text} matching the pattern; the
+second element of the match vector (index @math{1}) references the
+portion of text matching the first parenthetical subexpression, the
+third element of the match vector (index @math{2}) references the
+portion of text matching the second parenthetical subexpression; and so
+on.
 @end defun
-
-@c ------------------------------------------------------------
-
-@subsubheading Arguments validation
-
-The following bindings are meant to be used with the facilities of the
-library @library{vicare arguments validation}.
-
-
-@deffn {Validation Clause} cre2-alpha @var{obj}
-@deffnx {Validation Clause} false-or-cre2-alpha @var{obj}
-Succeed if @var{obj} satisfies the predicate @func{cre2-alpha?}; the
-second clause also accepts @false{}.
-@end deffn
-
-
-@deffn {Validation Clause} cre2-alpha/alive @var{obj}
-@deffnx {Validation Clause} false-or-cre2-alpha/alive @var{obj}
-Succeed if @var{obj} satisfies the predicate @func{cre2-alpha?/alive};
-the second clause also accepts @false{}.
-@end deffn
-
-
-@c page
-@node plain alpha ops
-@subsection Operating on alpha objects
-
-
-The following bindings are exported by the library
-@value{FOREIGN_SCHEME_LIB}.
-
-
-@defun cre2-alpha-initialise
-Build and return a new @objtype{cre2-alpha} object; if an error
-occurs raise an exception.
-@end defun
-
-
-@defun cre2-alpha-finalise @var{alpha}
-Finalise @var{alpha}; return unspecified values.  It is fine to apply
-this function multiple times to the same @var{alpha} value: the first
-time the underlying data is finalised, the subsequent times nothing
-happens.
-
-If this function is applied to an @var{alpha} value not owning the
-underlying @code{cre2_alpha} value: @var{alpha} is finalised, but
-the @code{cre2_alpha} value is left alone.
-@end defun
-
-@c page
-@node plain misc
-@section Miscellaneous operations
-
-
-The following bindings are exported by the library
-@value{FOREIGN_SCHEME_LIB}.
 
 
 @c page

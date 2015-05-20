@@ -222,14 +222,6 @@ Revised^6 Report on the algorithmic language Scheme
 @acronym{GCC}
 @end macro
 
-@macro cretwo{}
-@acronym{CRE2}
-@end macro
-
-@macro retwo{}
-@acronym{RE2}
-@end macro
-
 @c ------------------------------------------------------------
 @c Network related acronyms.
 @c ------------------------------------------------------------
