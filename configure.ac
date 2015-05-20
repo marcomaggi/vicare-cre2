@@ -66,6 +66,11 @@ AM_COND_IF([WANT_TIME_TESTS],
 #page
 #### cre2 configuration
 
+# Check for header file and shared (or static) library.
+# No need to check for "re2.h" header file.
+AC_CHECK_LIB([re2],[main],
+  [have_re2=yes],
+  [AC_MSG_WARN([test for RE2 library failed])])
 AC_CHECK_HEADERS([cre2.h],,
   [AC_MSG_FAILURE([missing cre2.h header],[2])])
 AC_CHECK_LIB([cre2],[cre2_version_string],,
