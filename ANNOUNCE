@@ -1,0 +1,47 @@
+Subject: [announce] Vicare/CRE2 revision 0.4d0
+
+			      Vicare/CRE2
+			      ===========
+
+
+This package  is a  distribution of  C and  Scheme libraries  for Vicare
+Scheme, an R6RS compliant Scheme implementation  in the form of a native
+compiler for x86 architectures, officially supporting GNU+Linux systems;
+it provides bindings for the CRE2 C language library.
+
+  This package makes use of the GNU Autotools.
+
+  The latest version of this package can be downloaded from:
+
+	<https://bitbucket.org/marcomaggi/vicare-cre2/downloads>
+
+the home page of the Vicare project is at:
+
+               <http://marcomaggi.github.io/vicare.html>
+
+development takes place at:
+
+	      <http://github.com/marcomaggi/vicare-cre2/>
+
+and as backup at:
+
+	    <https://bitbucket.org/marcomaggi/vicare-cre2/>
+
+  The last  time the author  bothered to  update this paragraph,  he had
+tested CRE2 version 0.1b5; the CRE2 library is available at:
+
+		  <http://github.com/marcomaggi/cre2/>
+
+
+Notes for revision 0.4d0
+------------------------
+
+* This is the standalone distribution of the CRE2 binding.
+
+
+### end of file
+# Local Variables:
+# mode: text
+# fill-column: 72
+# paragraph-start: "*"
+# End:

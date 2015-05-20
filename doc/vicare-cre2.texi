@@ -1,0 +1,519 @@
+\input texinfo.tex
+@c %**start of header
+@setfilename vicare-cre2.info
+@settitle CRE2 for Vicare
+@c %**end of header
+
+@include version.texi
+@include macros.texi
+
+@c page
+@c ------------------------------------------------------------
+@c Values.
+@c ------------------------------------------------------------
+
+@set TITLE                      CRE2 for Vicare
+
+@c To be used as @value{PACKAGE} whenever we need to include the full
+@c name of this package.
+@set PACKAGE                    Vicare/@cretwo{}
+
+@c To be used as @value{PACKAGE} whenever we need to include the
+@c nickname of the project: the name that is used to compose the
+@c distribution tarball or the web address.
+@set PACKAGE_NICKNAME           vicare-cre2
+
+@c To be used as @value{AUTHOR} whenever we need to include the list of
+@c authors of this document.
+@set AUTHOR                     Marco Maggi
+
+@c To be used as @value{AUTHOR_EMAIL} whenever we need to include the
+@c email of the *single* author of this document.
+@set AUTHOR_EMAIL               @email{marco.maggi.ipsu@@poste.it}
+
+@c To be used as @value{COPYRIGHT_YEARS} whenever we need to include the
+@c list of copyright years.
+@set COPYRIGHT_YEARS            2015
+
+@c ------------------------------------------------------------
+
+@set FOREIGN_PACKAGE            @cretwo{}
+@set FOREIGN_VERSION            0.1b5
+@set FOREIGN_URL                @url{http:/@//@/github.com/@/marcomaggi/@/cre2/}
+@set FOREIGN_SCHEME_LIB         @library{vicare regexps cre2}
+@set NAUSICAA_SCHEME_LIB        @library{nausicaa regexps cre2}
+@set GITHUB_URL                 @url{http://github.com/marcomaggi/vicare-cre2}
+@set BITBUCKET_URL              @url{https://bitbucket.org/marcomaggi/vicare-cre2/}
+@set DOWNLOAD_URL               @url{https://bitbucket.org/marcomaggi/vicare-cre2/downloads}
+@set DOCUMENTATION_URL          @url{http://marcomaggi.github.io/docs/vicare-cre2.html}
+@set VICARE_HOMEPAGE_URL        @url{http://marcomaggi.github.io/vicare.html}
+
+@macro cre2ref{NODE, TITLE}
+@xref{\NODE\,\TITLE\,\TITLE\,cre2}
+@end macro
+
+@macro cretwo{}
+@acronym{CRE2}
+@end macro
+
+@c page
+@c ------------------------------------------------------------
+@c Copyright notice.
+@c ------------------------------------------------------------
+
+@copying
+This document describes version @version{} of @value{PACKAGE}, a
+distribution of C and Scheme libraries for Vicare Scheme, an @rnrs{6}
+compliant Scheme implementation; it provides bindings for the
+@value{FOREIGN_PACKAGE} C language library.
+
+The package is distributed under the terms of the @gnu{} General Public
+License (@gpl{}) and can be downloaded from:
+
+@center @value{DOWNLOAD_URL}
+
+@noindent
+development takes place at:
+
+@center @value{GITHUB_URL}
+
+@noindent
+and as backup at:
+
+@center @value{BITBUCKET_URL}
+
+@noindent
+@value{FOREIGN_PACKAGE} is available at:
+
+@center @value{FOREIGN_URL}
+
+@noindent
+Copyright @copyright{} @value{COPYRIGHT_YEARS} by @value{AUTHOR} @value{AUTHOR_EMAIL}
+
+@quotation
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the @gnu{} Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with
+Invariant Sections being ``@gnu{} Free Documentation License'' and
+``@gnu{} General Public License'', no Front--Cover Texts, and no
+Back--Cover Texts.  A copy of the license is included in the section
+entitled ``@gnu{} Free Documentation License''.
+@end quotation
+@end copying
+
+@c page
+@c ------------------------------------------------------------
+@c Headers.
+@c ------------------------------------------------------------
+
+@titlepage
+@title @value{TITLE}
+@subtitle Revision @version{}
+@author @value{AUTHOR} @value{AUTHOR_EMAIL}
+@page
+@vskip 0pt plus 1filll
+@insertcopying
+@end titlepage
+
+@c ------------------------------------------------------------
+
+@ifinfo
+@dircategory Development
+@direntry
+* vicare-cre2: (vicare-cre2).   @value{TITLE}.
+@end direntry
+@end ifinfo
+
+@c ------------------------------------------------------------
+
+@ignore
+@syncodeindex tp cp
+@syncodeindex vr cp
+@syncodeindex fn cp
+@end ignore
+
+@c page
+@ifnottex
+@node Top
+@top @value{TITLE}
+
+@insertcopying
+
+@menu
+* overview::                    Overview of the package.
+* plain::                       Plain programming interface.
+
+Appendices
+
+* Package License::             GNU General Public License.
+* Documentation License::       GNU Free Documentation License.
+* references::                  Bibliography and references.
+
+Indexes
+
+* concept index::               An entry for each concept.
+* function index::              An entry for each function.
+* variable index::              An entry for each variable.
+* type index::                  An entry for each type.
+@end menu
+@end ifnottex
+
+@c page
+@node overview
+@chapter Overview of the package
+
+
+Vicare Scheme is an @rnrs{6} compliant Scheme language implementation in
+the form of a native compiler for x86 architectures, officially
+supporting @gnu{}+Linux systems.  @value{PACKAGE} is a distribution of C
+language and Scheme language libraries for Vicare Scheme; it provides
+bindings for the @value{FOREIGN_PACKAGE} C language library.
+
+The last time the author bothered to update this paragraph, he had
+tested @value{FOREIGN_PACKAGE} version @value{FOREIGN_VERSION}; the
+@value{FOREIGN_PACKAGE} library is available at:
+
+@center @value{FOREIGN_URL}
+
+The package installs a C language library implementing wrapper C
+functions for the C language @value{FOREIGN_PACKAGE} library; on top of
+this, the Scheme library @library{vicare regexps cre2} exports one
+binding for each @value{FOREIGN_PACKAGE} public function; additionally
+the library @library{vicare regexps cre2 constants} exports one binding
+for each constant value defined in the C language header @file{cre2.h}.
+
+The following Scheme libraries are installed:
+
+@table @asis
+@item @library{vicare regexps cre2}
+@cindex Library @library{vicare regexps cre2}
+@cindex @library{vicare regexps cre2}, library
+It exports one binding for each @value{FOREIGN_PACKAGE} public function.
+All the Scheme function names are directly derived from the C function
+names by replacing underscore characters @samp{_} with dash characters
+@samp{-}; so @cfunc{cre2_match} becomes @func{cre2-match}.
+
+@item @library{vicare regexps cre2 unsafe-capi}
+@cindex Library @library{vicare regexps cre2 unsafe-capi}
+@cindex @library{vicare regexps cre2 unsafe-capi}, library
+It exports one syntax binding for each @value{FOREIGN_PACKAGE} public
+function.  All the Scheme syntax names are directly derived from the C
+function names by replacing underscore characters @samp{_} with dash
+characters @samp{-}; so @cfunc{cre2_match} becomes @func{cre2-match}.
+
+These syntaxes expand to a direct call to the C language wrapper
+functions in the @value{PACKAGE} library; they are not meant to be
+called in normal usage of the package.
+
+@item @library{vicare regexps cre2 constants}
+@cindex Library @library{vicare regexps cre2 constants}
+@cindex @library{vicare regexps cre2 constants}, library
+It exports one binding for each constant value defined in the C language
+header @file{cre2.h}.
+
+@item @library{vicare regexps cre2 features}
+@cindex Library @library{vicare regexps cre2 features}
+@cindex @library{vicare regexps cre2 features}, library
+It exports one identifier syntax binding for each @code{HAVE_} constant
+defined by the @command{configure} script, expanding to @true{} or
+@false{}.
+@end table
+
+Scheme libraries are installed under the directory:
+
+@center @file{$(libdir)/vicare-scheme}
+
+This document contains only a brief description of the functions: refer
+to the @value{FOREIGN_PACKAGE}'s documentation for details.
+
+@c page
+@node plain
+@chapter Plain programming interface
+
+
+@cindex Library @value{FOREIGN_SCHEME_LIB}
+@cindex @value{FOREIGN_SCHEME_LIB}, library
+
+
+The library @value{FOREIGN_SCHEME_LIB} implements the high level @api{}
+for @value{FOREIGN_PACKAGE}.
+
+@menu
+* plain version::               @value{PACKAGE} version informations.
+* plain alpha::                 Alpha objects.
+* plain misc::                  Miscellaneous operations.
+@end menu
+
+@c page
+@node plain version
+@section @value{PACKAGE} version informations
+
+
+The installed C library follows version numbering as established by the
+@gnu{} Autotools.  For an explanation of interface numbers as managed by
+@gnu{} Libtool @xref{Libtool versioning, interface, Libtool's versioning
+system, libtool, Shared library support for @gnu{}}.
+
+The following bindings are exported by the library
+@value{FOREIGN_SCHEME_LIB}.
+
+
+@defun vicare-cre2-version-interface-current
+@defunx vicare-cre2-version-interface-revision
+@defunx vicare-cre2-version-interface-age
+Return a fixnum representing a version number.
+@end defun
+
+
+@defun vicare-cre2-version
+Return a Scheme string representing the version number.
+@end defun
+
+@c page
+@node plain alpha
+@section Alpha objects
+
+
+@menu
+* plain alpha struct::          Alpha data structure.
+* plain alpha ops::             Operating on alpha objects.
+@end menu
+
+@c page
+@node plain alpha struct
+@subsection Alpha data structure
+
+
+The following bindings are exported by the library
+@value{FOREIGN_SCHEME_LIB}.
+
+
+@deftp {Struct Type} cre2-alpha
+@cindex Argument @var{alpha}
+@cindex @var{alpha} argument
+Opaque structure type referencing an instance of the C language type
+@code{cre2_alpha}.  When instances of this type are used as
+arguments to functions: this documentation identifies them as
+@var{alpha}.
+
+Instances of this type must be finalised with
+@func{cre2-alpha-finalise}; whenever an instance of this type is
+garbage collected: @func{cre2-alpha-finalise} is automatically
+applied to it and any error ignored.
+
+In certain contexts, instances of this type own the referenced
+@code{cre2_alpha} value, in other contexts they do not:
+
+@itemize
+@item
+Finalising a @objtype{cre2-alpha} instance owning the
+@code{cre2_alpha} value, causes finalisation of the
+@code{cre2_alpha} value too.
+
+@item
+Finalising a @objtype{cre2-alpha} instance @strong{not} owning the
+@code{cre2_alpha} value, leaves the @code{cre2_alpha} untouched.
+@end itemize
+
+@noindent
+this should happen transparently.
+@end deftp
+
+
+@defun cre2-alpha? @var{obj}
+Return @true{} if @var{obj} is an instance of @objtype{cre2-alpha};
+otherwise return @false{}.
+@end defun
+
+
+@defun cre2-alpha?/alive @var{obj}
+Return @true{} if @var{obj} is an instance of @objtype{cre2-alpha} and it
+has not been finalised; return @false{} otherwise.
+@end defun
+
+@c ------------------------------------------------------------
+
+@subsubheading Object properties
+
+
+@defun cre2-alpha-putprop @var{alpha} @var{key} @var{value}
+Add a new property @var{key} to the property list of @var{alpha};
+@var{key} must be a symbol.  If @var{key} is already set: the old entry
+is mutated to reference the new @var{value}.
+@end defun
+
+
+@defun cre2-alpha-getprop @var{alpha} @var{key}
+Return the value of the property @var{key} in the property list of
+@var{alpha}; if @var{key} is not set: return @false{}.  @var{key} must
+be a symbol.
+@end defun
+
+
+@defun cre2-alpha-remprop @var{alpha} @var{key}
+Remove the property @var{key} from the property list of @var{alpha}; if
+@var{key} is not set: nothing happens.  @var{key} must be a symbol.
+@end defun
+
+
+@defun cre2-alpha-property-list @var{alpha}
+Return a new association list representing the property list of
+@var{alpha}.  The order of the entries is the same as the property
+creation order.
+@end defun
+
+@c ------------------------------------------------------------
+
+@subsubheading Custom destructor
+
+
+@defun alpha-custom-destructor @var{alpha}
+@defunx set-alpha-custom-destructor! @var{alpha} @var{func}
+Retrieve or set a destructor function associated to @var{alpha}.
+
+Whenever @var{alpha} is finalised, either explicitly with
+@func{cre2-alpha-finalise} or implicitly by the garbage collector,
+@var{func} is applied to @var{alpha} before the internal state of
+@var{alpha} is destroyed.
+@end defun
+
+@c ------------------------------------------------------------
+
+@subsubheading Other operations
+
+
+@defun cre2-alpha-hash @var{alpha}
+Return an exact integer to be used as hashtable key for @var{alpha}.
+Hashtables having a @objtype{cre2-alpha} as key can be instantiated
+as follows:
+
+@example
+(make-hashtable cre2-alpha-hash eq?)
+@end example
+@end defun
+
+@c ------------------------------------------------------------
+
+@subsubheading Arguments validation
+
+The following bindings are meant to be used with the facilities of the
+library @library{vicare arguments validation}.
+
+
+@deffn {Validation Clause} cre2-alpha @var{obj}
+@deffnx {Validation Clause} false-or-cre2-alpha @var{obj}
+Succeed if @var{obj} satisfies the predicate @func{cre2-alpha?}; the
+second clause also accepts @false{}.
+@end deffn
+
+
+@deffn {Validation Clause} cre2-alpha/alive @var{obj}
+@deffnx {Validation Clause} false-or-cre2-alpha/alive @var{obj}
+Succeed if @var{obj} satisfies the predicate @func{cre2-alpha?/alive};
+the second clause also accepts @false{}.
+@end deffn
+
+
+@c page
+@node plain alpha ops
+@subsection Operating on alpha objects
+
+
+The following bindings are exported by the library
+@value{FOREIGN_SCHEME_LIB}.
+
+
+@defun cre2-alpha-initialise
+Build and return a new @objtype{cre2-alpha} object; if an error
+occurs raise an exception.
+@end defun
+
+
+@defun cre2-alpha-finalise @var{alpha}
+Finalise @var{alpha}; return unspecified values.  It is fine to apply
+this function multiple times to the same @var{alpha} value: the first
+time the underlying data is finalised, the subsequent times nothing
+happens.
+
+If this function is applied to an @var{alpha} value not owning the
+underlying @code{cre2_alpha} value: @var{alpha} is finalised, but
+the @code{cre2_alpha} value is left alone.
+@end defun
+
+@c page
+@node plain misc
+@section Miscellaneous operations
+
+
+The following bindings are exported by the library
+@value{FOREIGN_SCHEME_LIB}.
+
+
+@c page
+@c ------------------------------------------------------------
+@c Appendices.
+@c ------------------------------------------------------------
+
+@include gpl-3.0.texi
+@include fdl-1.3.texi
+
+@c page
+@node references
+@appendix Bibliography and references
+
+
+The documentation of @value{PACKAGE} is available online:
+
+@center @value{DOCUMENTATION_URL}
+
+@noindent
+the latest version of this package can be downloaded from:
+
+@center @value{DOWNLOAD_URL}
+
+@noindent
+development takes place at:
+
+@center @value{GITHUB_URL}
+
+@noindent
+and as backup at:
+
+@center @value{BITBUCKET_URL}
+
+@noindent
+the home page of the Vicare project is at:
+
+@center @value{VICARE_HOMEPAGE_URL}
+
+@noindent
+@value{FOREIGN_PACKAGE} can be found here:
+
+@center @value{FOREIGN_URL}
+
+@c page
+@node concept index
+@appendix An entry for each concept
+
+@printindex cp
+
+@node function index
+@appendix An entry for each function.
+
+@printindex fn
+
+@node variable index
+@appendix An entry for each variable.
+
+@printindex vr
+
+@node type index
+@appendix An entry for each type.
+
+@printindex tp
+
+@contents
+@bye
+
+@c end of file
+
