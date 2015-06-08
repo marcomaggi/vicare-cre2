@@ -61,7 +61,9 @@
 
     ;; matching regular expressions
     match)
-  (import (vicare)
+  (import (vicare (or (0 4 2015 5 (>= 19))
+		      (0 4 2015 (>= 6))
+		      (0 4 (>= 2016))))
     (prefix (vicare regexps cre2 unsafe-capi) capi.)
     (prefix (vicare platform words) words.))
 
