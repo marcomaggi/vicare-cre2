@@ -1,4 +1,4 @@
-Subject: [announce] Vicare/CRE2 revision 0.4d0
+Subject: [announce] Vicare/CRE2 revision 0.4d1
 
 			      Vicare/CRE2
 			      ===========
@@ -31,6 +31,12 @@ and as backup at:
 tested CRE2 version 0.1b5; the CRE2 library is available at:
 
 		  <http://github.com/marcomaggi/cre2/>
+
+
+Notes for revision 0.4d1
+------------------------
+
+* Ensures compatibility with Vicare Scheme 0.4d1.
 
 
 Notes for revision 0.4d0

@@ -7,7 +7,7 @@
 ;;;
 ;;;
 ;;;
-;;;Copyright (C) 2012-2015 Marco Maggi <marco.maggi-ipsu@poste.it>
+;;;Copyright (C) 2012-2015, 2017 Marco Maggi <marco.maggi-ipsu@poste.it>
 ;;;
 ;;;This program is free software:  you can redistribute it and/or modify
 ;;;it under the terms of the  GNU General Public License as published by
@@ -26,6 +26,7 @@
 
 #!vicare
 (library (vicare regexps cre2 (0 4))
+  #;(options typed-language)
   (foreign-library "vicare-cre2")
   (export
 
@@ -61,11 +62,10 @@
 
     ;; matching regular expressions
     match)
-  (import (vicare (or (0 4 2015 5 (>= 19))
-		      (0 4 2015 (>= 6))
-		      (0 4 (>= 2016))))
-    (prefix (vicare regexps cre2 unsafe-capi) capi.)
-    (prefix (vicare platform words) words.))
+  (import (vicare (0 4 2017 1 (>= 10)))
+    (prefix (vicare system structs) structs::)
+    (prefix (vicare regexps cre2 unsafe-capi) capi::)
+    (prefix (vicare platform words) words::))
 
 
 ;;;; helpers
@@ -83,47 +83,44 @@
 
 ;;; arguments validation
 
-(define (false? obj)
-  (not obj))
-
 (define (positive-signed-int? obj)
-  (and (words.signed-int? obj)
+  (and (words::signed-int? obj)
        (positive? obj)))
 
 
 ;;;; version functions
 
 (define (cre2-version-interface-current)
-  (capi.cre2-version-interface-current))
+  (capi::cre2-version-interface-current))
 
 (define (cre2-version-interface-revision)
-  (capi.cre2-version-interface-revision))
+  (capi::cre2-version-interface-revision))
 
 (define (cre2-version-interface-age)
-  (capi.cre2-version-interface-age))
+  (capi::cre2-version-interface-age))
 
 ;;;
 
 (define (vicare-cre2-version-interface-current)
-  (capi.vicare-cre2-version-interface-current))
+  (capi::vicare-cre2-version-interface-current))
 
 (define (vicare-cre2-version-interface-revision)
-  (capi.vicare-cre2-version-interface-revision))
+  (capi::vicare-cre2-version-interface-revision))
 
 (define (vicare-cre2-version-interface-age)
-  (capi.vicare-cre2-version-interface-age))
+  (capi::vicare-cre2-version-interface-age))
 
 (define (vicare-cre2-version)
-  (ascii->string (capi.vicare-cre2-version)))
+  (ascii->string (capi::vicare-cre2-version)))
 
 
 ;;;; precompiled regular expressions
 
-(define-struct regexp
+(structs::define-struct regexp
   (pointer))
 
 (define (%struct-regexp-printer S port sub-printer)
-  (define-inline (%display thing)
+  (define-syntax-rule (%display thing)
     (display thing port))
   (%display "#[re2-regexp")
   (%display " pointer=")	(%display (regexp-pointer S))
@@ -135,14 +132,14 @@
 (define (%free-allocated-regexp)
   (do ((S (regexp-guardian) (regexp-guardian)))
       ((not S))
-    (capi.cre2-delete (regexp-pointer S))))
+    (capi::cre2-delete (regexp-pointer S))))
 
 (case-define* %make-regexp
   ((pattern)
    (%make-regexp pattern #f))
   (({pattern (or string? bytevector?)} {opts (or false? options?)})
    (with-bytevectors ((pattern.bv pattern))
-     (let ((rv (capi.cre2-new pattern.bv (if opts
+     (let ((rv (capi::cre2-new pattern.bv (if opts
 					     (options-pointer opts)
 					   (null-pointer)))))
        (cond ((pointer? rv)
@@ -158,12 +155,12 @@
   #| end of CASE-DEFINE* |# )
 
 (define* (delete-regexp {rex regexp?})
-  (capi.cre2-delete (regexp-pointer rex)))
+  (capi::cre2-delete (regexp-pointer rex)))
 
 
 ;;;; configuration options
 
-(define-struct options
+(structs::define-struct options
   (pointer))
 
 (define (%struct-options-printer S port sub-printer)
@@ -172,16 +169,16 @@
   (let ((P (options-pointer S)))
     (%display "#[re2-options")
     (%display " pointer=")		(%display P)
-    (%display " posix-syntax?=")	(%display (capi.cre2-opt-posix-syntax P))
-    (%display " longest-match?=")	(%display (capi.cre2-opt-longest-match P))
-    (%display " log-errors?=")		(%display (capi.cre2-opt-log-errors P))
-    (%display " literal?=")		(%display (capi.cre2-opt-literal P))
-    (%display " never-nl?=")		(%display (capi.cre2-opt-never-nl P))
-    (%display " case-sensitive?=")	(%display (capi.cre2-opt-case-sensitive P))
-    (%display " perl-classes?=")	(%display (capi.cre2-opt-perl-classes P))
-    (%display " word-boundary?=")	(%display (capi.cre2-opt-word-boundary P))
-    (%display " one-line?=")		(%display (capi.cre2-opt-one-line P))
-    (%display " max-mem=")		(%display (capi.cre2-opt-max-mem P))
+    (%display " posix-syntax?=")	(%display (capi::cre2-opt-posix-syntax P))
+    (%display " longest-match?=")	(%display (capi::cre2-opt-longest-match P))
+    (%display " log-errors?=")		(%display (capi::cre2-opt-log-errors P))
+    (%display " literal?=")		(%display (capi::cre2-opt-literal P))
+    (%display " never-nl?=")		(%display (capi::cre2-opt-never-nl P))
+    (%display " case-sensitive?=")	(%display (capi::cre2-opt-case-sensitive P))
+    (%display " perl-classes?=")	(%display (capi::cre2-opt-perl-classes P))
+    (%display " word-boundary?=")	(%display (capi::cre2-opt-word-boundary P))
+    (%display " one-line?=")		(%display (capi::cre2-opt-one-line P))
+    (%display " max-mem=")		(%display (capi::cre2-opt-max-mem P))
     (%display "]")))
 
 (define options-guardian
@@ -190,16 +187,16 @@
 (define (%free-allocated-options)
   (do ((S (options-guardian) (options-guardian)))
       ((not S))
-    (capi.cre2-opt-delete (options-pointer S))))
+    (capi::cre2-opt-delete (options-pointer S))))
 
 (define* (%make-options)
-  (let ((rv (capi.cre2-opt-new)))
+  (let ((rv (capi::cre2-opt-new)))
     (if (pointer-null? rv)
 	(error __who__ "memory allocation error while building RE2 options object")
       (options-guardian (make-options rv)))))
 
 (define* (delete-options {opts options?})
-  (capi.cre2-opt-delete (options-pointer opts)))
+  (capi::cre2-opt-delete (options-pointer opts)))
 
 ;;; --------------------------------------------------------------------
 
@@ -211,31 +208,31 @@
 			     )))
   (define-option-setter set-posix-syntax!
     cre2.set-posix-syntax!
-    capi.cre2-opt-set-posix-syntax)
+    capi::cre2-opt-set-posix-syntax)
   (define-option-setter set-longest-match!
     cre2.set-longest-match!
-    capi.cre2-opt-set-longest-match)
+    capi::cre2-opt-set-longest-match)
   (define-option-setter set-log-errors!
     cre2.set-log-errors!
-    capi.cre2-opt-set-log-errors)
+    capi::cre2-opt-set-log-errors)
   (define-option-setter set-literal!
     cre2.set-literal!
-    capi.cre2-opt-set-literal)
+    capi::cre2-opt-set-literal)
   (define-option-setter set-never-nl!
     cre2.set-never-nl!
-    capi.cre2-opt-set-never-nl)
+    capi::cre2-opt-set-never-nl)
   (define-option-setter set-case-sensitive!
     cre2.set-case-sensitive!
-    capi.cre2-opt-set-case-sensitive)
+    capi::cre2-opt-set-case-sensitive)
   (define-option-setter set-perl-classes!
     cre2.set-perl-classes!
-    capi.cre2-opt-set-perl-classes)
+    capi::cre2-opt-set-perl-classes)
   (define-option-setter set-word-boundary!
     cre2.set-word-boundary!
-    capi.cre2-opt-set-word-boundary)
+    capi::cre2-opt-set-word-boundary)
   (define-option-setter set-one-line!
     cre2.set-one-line!
-    capi.cre2-opt-set-one-line))
+    capi::cre2-opt-set-one-line))
 
 (let-syntax
     ((define-option-getter (syntax-rules ()
@@ -245,39 +242,39 @@
 			     )))
   (define-option-getter posix-syntax?
     cre2.posix-syntax?
-    capi.cre2-opt-posix-syntax)
+    capi::cre2-opt-posix-syntax)
   (define-option-getter longest-match?
     cre2.longest-match?
-    capi.cre2-opt-longest-match)
+    capi::cre2-opt-longest-match)
   (define-option-getter log-errors?
     cre2.log-errors?
-    capi.cre2-opt-log-errors)
+    capi::cre2-opt-log-errors)
   (define-option-getter literal?
     cre2.literal?
-    capi.cre2-opt-literal)
+    capi::cre2-opt-literal)
   (define-option-getter never-nl?
     cre2.never-nl?
-    capi.cre2-opt-never-nl)
+    capi::cre2-opt-never-nl)
   (define-option-getter case-sensitive?
     cre2.case-sensitive?
-    capi.cre2-opt-case-sensitive)
+    capi::cre2-opt-case-sensitive)
   (define-option-getter perl-classes?
     cre2.perl-classes?
-    capi.cre2-opt-perl-classes)
+    capi::cre2-opt-perl-classes)
   (define-option-getter word-boundary?
     cre2.word-boundary?
-    capi.cre2-opt-word-boundary)
+    capi::cre2-opt-word-boundary)
   (define-option-getter one-line?
     cre2.one-line?
-    capi.cre2-opt-one-line))
+    capi::cre2-opt-one-line))
 
 ;;; --------------------------------------------------------------------
 
 (define* (set-max-mem! {opt options?} {dim positive-signed-int?})
-  (capi.cre2-opt-set-max-mem (options-pointer opt) dim))
+  (capi::cre2-opt-set-max-mem (options-pointer opt) dim))
 
 (define* (max-mem {opt options?})
-  (capi.cre2-opt-max-mem (options-pointer opt)))
+  (capi::cre2-opt-max-mem (options-pointer opt)))
 
 
 ;;;; matching regular expressions
@@ -295,7 +292,7 @@
 			  ((both)		2)
 			  (else
 			   (assertion-violation __who__ "invalid anchor argument" anchor)))))
-      (capi.cre2-match (regexp-pointer rex) text.bv start end anchor))))
+      (capi::cre2-match (regexp-pointer rex) text.bv start end anchor))))
 
 
 ;;;; done
@@ -304,8 +301,8 @@
 		      %free-allocated-options
 		      (post-gc-hooks)))
 
-(set-rtd-printer! (type-descriptor regexp)  %struct-regexp-printer)
-(set-rtd-printer! (type-descriptor options) %struct-options-printer)
+(structs::set-struct-type-printer! (type-descriptor regexp)  %struct-regexp-printer)
+(structs::set-struct-type-printer! (type-descriptor options) %struct-options-printer)
 
 #| end of library |# )
 
